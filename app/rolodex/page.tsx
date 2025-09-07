@@ -234,8 +234,8 @@ function EditableRow({ contact, onSave, onEmail }: { contact: Contact; onSave: (
       </td>
       <td className="py-2 pr-3">
         <div className="flex gap-2">
-          <Button size="sm" variant="secondary" onClick={onEmail}>Mail</Button>
-          <Button size="sm" onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
+          <Button onClick={onEmail}>Mail</Button>
+          <Button onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
         </div>
       </td>
     </tr>
