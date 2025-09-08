@@ -18,7 +18,7 @@ interface Contact {
   profile_url: string | null;
   profile_id: string | null;
   email: string | null;
-  updated_at?: string;
+  updated_at?: string | null;
 }
 
 export default function RolodexUI() {
@@ -64,7 +64,16 @@ export default function RolodexUI() {
     setLoading(true);
     try {
       const data: Contact[] = await callRolodex({ action: "view", user_external_id: userId });
-      setContacts(Array.isArray(data) ? data : []);
+      if (Array.isArray(data)) {
+        data.sort(
+          (a, b) =>
+            new Date(b.updated_at || 0).getTime() -
+            new Date(a.updated_at || 0).getTime()
+        );
+        setContacts(data);
+      } else {
+        setContacts([]);
+      }
     } catch (e: any) {
       toast.error(e.message || "Failed to load");
     } finally {
@@ -182,13 +191,14 @@ export default function RolodexUI() {
                   <th className="py-2 pr-3">Location</th>
                   <th className="py-2 pr-3">Email</th>
                   <th className="py-2 pr-3">Profile</th>
+                  <th className="py-2 pr-3">Updated</th>
                   <th className="py-2 pr-3 w-40">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {contacts.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-muted-foreground">{loading ? "Loading..." : "No contacts yet"}</td>
+                    <td colSpan={8} className="py-8 text-center text-muted-foreground">{loading ? "Loading..." : "No contacts yet"}</td>
                   </tr>
                 )}
                 {contacts.map((c) => (
@@ -231,6 +241,9 @@ function EditableRow({ contact, onSave, onEmail }: { contact: Contact; onSave: (
         ) : (
           <span className="text-muted-foreground">—</span>
         )}
+      </td>
+      <td className="py-2 pr-3 whitespace-nowrap">
+        {draft.updated_at ? new Date(draft.updated_at).toLocaleString() : "—"}
       </td>
       <td className="py-2 pr-3">
         <div className="flex gap-2">
